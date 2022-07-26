@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">GitHubApp</string>
+    <string name="login">Login</string>
+    <string name="token">Token</string>
+    <string name="sample_login">user</string>
+    <string name="sample_followers">Followers: 5</string>
+    <string name="sample_following">Following: 34</string>
+    <string name="logout">Logout</string>
+    <string name="sample_repository">repository</string>
+    <string name="sample_contributors">Contributors: 34</string>
+    <string name="sample_owner">Owner</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile">Profile</string>
+</resources>

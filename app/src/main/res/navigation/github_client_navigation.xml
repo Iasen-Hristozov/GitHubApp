@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/github_client_navigation"
+    app:startDestination="@id/fragment_login">
+
+
+    <action
+        android:id="@+id/action_to_login"
+        app:popUpTo="@id/fragment_login"
+        app:popUpToInclusive="false"/>
+
+    <fragment
+        android:id="@+id/fragment_login"
+        android:name="test.githubapp.view.LoginFragment"
+        android:label="@string/app_name">
+        <action
+            android:id="@+id/action_login_to_user"
+            app:destination="@id/fragment_user" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_user"
+        android:name="test.githubapp.view.UserFragment"
+        android:label="@string/app_name">
+        <action
+            android:id="@+id/action_user_to_users"
+            app:destination="@id/fragment_users" />
+
+        <action
+            android:id="@+id/action_user_to_repository"
+            app:destination="@id/fragment_repository" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_repository"
+        android:name="test.githubapp.view.RepositoryFragment"
+        android:label="@string/app_name">
+        <action
+            android:id="@+id/action_repository_to_users"
+            app:destination="@id/fragment_users" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_users"
+        android:name="test.githubapp.view.UsersFragment"
+        android:label="@string/app_name">
+    </fragment>
+
+    <action
+        android:id="@+id/action_to_profile"
+        app:popUpTo="@id/fragment_profile"
+        app:popUpToInclusive="false"/>
+
+    <fragment
+        android:id="@+id/fragment_profile"
+        android:name="test.githubapp.view.ProfileFragment"
+        android:label="@string/app_name">
+    </fragment>
+
+</navigation>
