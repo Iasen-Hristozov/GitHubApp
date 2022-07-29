@@ -9,39 +9,96 @@
         android:id="@+id/repositoryTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
+        app:layout_constraintVertical_bias="0.33"
         android:text="@string/sample_repository"
+        android:textColor="#777"
+        android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/contributorsTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
         android:text="@string/sample_contributors"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ownerTextView" />
+        android:textColor="#777"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@+id/contributorsLabel"
+        app:layout_constraintStart_toStartOf="@+id/contributorsLabel"
+        app:layout_constraintEnd_toEndOf="@+id/contributorsLabel" />
 
-    <ImageView
-        android:id="@+id/staredImageView"
+    <TextView
+        android:id="@+id/contributorsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        app:layout_constraintBottom_toBottomOf="@id/repositoryTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/repositoryTextView"
-        app:srcCompat="@android:drawable/btn_star_big_on" />
+        android:layout_marginEnd="16dp"
+        android:text="@string/label_contributors"
+        android:textColor="#777"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/divider"
+        app:layout_constraintBottom_toBottomOf="@id/divider" />
+
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="#ccc"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ownerLabel"
+        app:layout_constraintEnd_toStartOf= "@+id/ownerTextView"
+        app:layout_constraintTop_toTopOf="@+id/ownerTextView" />
+
 
     <TextView
         android:id="@+id/ownerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:text="@string/sample_owner"
+        android:textColor="#777"
+        android:textSize="22sp"
+
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/ownerLabel"
         app:layout_constraintTop_toBottomOf="@+id/repositoryTextView" />
+
+    <TextView
+        android:id="@+id/ownerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_owner"
+        android:textColor="#777"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/ownerTextView"
+        app:layout_constraintEnd_toEndOf="@id/ownerTextView"
+        app:layout_constraintTop_toBottomOf="@+id/ownerTextView" />
+
+
+    <View
+        android:id="@+id/divider_2"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="#ccc"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ownerLabel"
+        app:layout_constraintStart_toEndOf="@+id/ownerTextView"
+        app:layout_constraintTop_toTopOf="@+id/ownerTextView" />
+
+    <ImageView
+        android:id="@+id/staredImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/divider_2"
+        app:layout_constraintStart_toEndOf="@id/divider_2"
+        app:layout_constraintTop_toTopOf="@id/divider_2"
+        app:srcCompat="@android:drawable/btn_star_big_on" />
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

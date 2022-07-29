@@ -4,15 +4,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import test.githubapp.R;
 
 import androidx.fragment.app.Fragment;
+import test.githubapp.viewmodel.ContributorsViewModel;
 import test.githubapp.viewmodel.RepositoryViewModel;
+import test.githubapp.viewmodel.UsersViewModel;
 
 public class RepositoryFragment extends Fragment
 {
@@ -37,6 +39,9 @@ public class RepositoryFragment extends Fragment
       View view = inflater.inflate(R.layout.fragment_repository, container, false);
       TextView repositoryTextView = view.findViewById(R.id.repositoryTextView);
       TextView contributorsTextView = view.findViewById(R.id.contributorsTextView);
+      contributorsTextView.setOnClickListener(v -> {
+         Navigation.findNavController(v).navigate(R.id.action_repository_to_users);
+      });
       TextView ownerTextView = view.findViewById(R.id.ownerTextView);
       ImageView starredImage = view.findViewById(R.id.staredImageView);
       starredImage.setOnClickListener(v -> {
@@ -50,9 +55,17 @@ public class RepositoryFragment extends Fragment
       repositoryViewModel.repositoryLiveData.observe(requireActivity(), repository -> {
          repositoryTextView.setText(repository.getName());
          ownerTextView.setText(repository.getOwner().getLogin());
+
+         ContributorsViewModel contributorsViewModel = new ViewModelProvider(requireActivity()).get(ContributorsViewModel.class);
+         contributorsViewModel.fetchFromRemote(repository.getOwner().getLogin(), repository.getName());
+         contributorsViewModel.contributorsLiveData.observe(requireActivity(), contributors -> {
+            contributorsTextView.setText(String.valueOf(contributors.size()));
+            new ViewModelProvider(requireActivity()).get(UsersViewModel.class).setUsersLiveData(contributors);
+         });
+
       });
       repositoryViewModel.contributorsLiveData.observe(requireActivity(), contributors -> {
-         contributorsTextView.setText("Contributors: " + contributors.size());
+         contributorsTextView.setText(String.valueOf(contributors.size()));
       });
 
       return view;

@@ -52,7 +52,7 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.User
    @Override
    public void onBindViewHolder(@NonNull UserViewHolder holder, int position)
    {
-      holder.getUserTextView().setText(visibleUserItems.get(position).getLogin());
+//      holder.getUserTextView().setText(visibleUserItems.get(position).getLogin());
 
       holder.bind(position);
    }

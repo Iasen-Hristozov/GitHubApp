@@ -7,8 +7,10 @@
     <string name="sample_following">Following: 34</string>
     <string name="logout">Logout</string>
     <string name="sample_repository">repository</string>
-    <string name="sample_contributors">Contributors: 34</string>
+    <string name="sample_contributors">34</string>
+    <string name="label_contributors">Contributors</string>
     <string name="sample_owner">Owner</string>
+    <string name="label_owner">Owner</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="profile">Profile</string>
