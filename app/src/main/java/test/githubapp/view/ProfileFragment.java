@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import test.githubapp.R;
 
 public class ProfileFragment extends Fragment
@@ -25,6 +26,12 @@ public class ProfileFragment extends Fragment
                             Bundle savedInstanceState)
    {
       // Inflate the layout for this fragment
-      return inflater.inflate(R.layout.fragment_profile, container, false);
+      View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+      view.findViewById(R.id.logoutButton).setOnClickListener(v -> {
+         Navigation.findNavController(v).navigate(R.id.action_to_login);
+      });
+
+      return view;
    }
 }

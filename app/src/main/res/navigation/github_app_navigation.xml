@@ -7,13 +7,13 @@
 
     <action
         android:id="@+id/action_to_login"
-        app:popUpTo="@id/fragment_login"
-        tools:layout="@layout/fragment_login"/>
+        app:popUpTo="@id/fragment_login"/>
 
     <fragment
         android:id="@+id/fragment_login"
         android:name="test.githubapp.view.LoginFragment"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_login_to_user"
             app:destination="@id/fragment_user" />
@@ -22,22 +22,23 @@
     <fragment
         android:id="@+id/fragment_user"
         android:name="test.githubapp.view.UserFragment"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_user">
         <action
             android:id="@+id/action_user_to_users"
             app:destination="@id/fragment_users"/>
 
         <action
             android:id="@+id/action_user_to_repository"
-            app:destination="@id/fragment_repository"
-            app:popUpTo="@id/fragment_user" />
+            app:destination="@id/fragment_repository"/>
 
     </fragment>
 
     <fragment
         android:id="@+id/fragment_repository"
         android:name="test.githubapp.view.RepositoryFragment"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_repository">
         <action
             android:id="@+id/action_repository_to_users"
             app:destination="@id/fragment_users" />
@@ -47,17 +48,19 @@
         android:id="@+id/fragment_users"
         android:name="test.githubapp.view.UsersFragment"
         android:label="@string/app_name"
+        tools:layout="@layout/fragment_users"
         >
     </fragment>
 
     <action
         android:id="@+id/action_to_profile"
-        app:popUpTo="@id/fragment_profile"/>
+        app:destination="@id/fragment_profile"/>
 
     <fragment
         android:id="@+id/fragment_profile"
         android:name="test.githubapp.view.ProfileFragment"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_profile">
     </fragment>
 
 </navigation>

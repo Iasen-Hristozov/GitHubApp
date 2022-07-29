@@ -11,7 +11,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-import test.githubapp.model.Contributor;
 import test.githubapp.model.GitHubApiService;
 import test.githubapp.model.User;
 import test.githubapp.util.SharedPreferencesHelper;

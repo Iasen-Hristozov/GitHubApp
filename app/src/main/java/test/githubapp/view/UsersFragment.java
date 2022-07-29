@@ -32,7 +32,6 @@ public class UsersFragment extends Fragment implements MenuProvider
    public void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
-//      setHasOptionsMenu(true);
       requireActivity().addMenuProvider(this);
    }
 
