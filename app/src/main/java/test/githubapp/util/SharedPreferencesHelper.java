@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 public class SharedPreferencesHelper
 {
    private static final String PREF_TIME = "Pref time";
+   private static final String PREF_TOKEN = "token";
    private static SharedPreferencesHelper instance;
    private final  SharedPreferences       sharedPreferences;
 
@@ -36,4 +37,15 @@ public class SharedPreferencesHelper
    {
       return sharedPreferences.getString("pref_cache_duration", "");
    }
+
+   public void saveToken(String token)
+   {
+      sharedPreferences.edit().putString(PREF_TOKEN, token).apply();
+   }
+
+   public String getToken()
+   {
+      return sharedPreferences.getString(PREF_TOKEN, "");
+   }
+
 }

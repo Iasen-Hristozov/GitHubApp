@@ -9,16 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
+import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import test.githubapp.R;
-
-import androidx.fragment.app.Fragment;
 import test.githubapp.viewmodel.UsersViewModel;
 
-public class UsersFragment extends Fragment
+public class UsersFragment extends Fragment implements MenuProvider
 {
    UsersListAdapter usersListAdapter;
 
@@ -31,7 +32,8 @@ public class UsersFragment extends Fragment
    public void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
-      setHasOptionsMenu(true);
+//      setHasOptionsMenu(true);
+      requireActivity().addMenuProvider(this);
    }
 
    @Override
@@ -57,11 +59,10 @@ public class UsersFragment extends Fragment
    }
 
    @Override
-   public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-      // TODO Add your menu entries here
-      inflater.inflate(R.menu.menu_users, menu);
+   public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater)
+   {
+      menuInflater.inflate(R.menu.menu_users, menu);
       final MenuItem searchItem = menu.findItem(R.id.action_search).setVisible(true);
-      super.onCreateOptionsMenu(menu, inflater);
 
       final SearchView searchView = (SearchView) searchItem.getActionView();
 
@@ -81,5 +82,20 @@ public class UsersFragment extends Fragment
             return true;
          }
       });
+
+   }
+
+   @Override
+   public boolean onMenuItemSelected(@NonNull MenuItem menuItem)
+   {
+      return false;
+   }
+
+   @Override
+   public void onDestroy()
+   {
+      super.onDestroy();
+      requireActivity().removeMenuProvider(this);
+
    }
 }

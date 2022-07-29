@@ -16,67 +16,26 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import test.githubapp.R;
 import test.githubapp.model.User;
+import test.githubapp.util.SharedPreferencesHelper;
 import test.githubapp.viewmodel.ContributorsViewModel;
 import test.githubapp.viewmodel.FollowersViewModel;
 import test.githubapp.viewmodel.FollowingViewModel;
 import test.githubapp.viewmodel.OwnerViewModel;
 import test.githubapp.viewmodel.RepositoriesViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LoginFragment extends Fragment
 {
    private RepositoriesViewModel repositoriesViewModel;
-
-
-
-   // TODO: Rename parameter arguments, choose names that match
-   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-   private static final String ARG_PARAM1 = "param1";
-   private static final String ARG_PARAM2 = "param2";
-
-   // TODO: Rename and change types of parameters
-   private String mParam1;
-   private String mParam2;
 
    public LoginFragment()
    {
       // Required empty public constructor
    }
 
-   /**
-    * Use this factory method to create a new instance of
-    * this fragment using the provided parameters.
-    *
-    * @param param1 Parameter 1.
-    * @param param2 Parameter 2.
-    * @return A new instance of fragment LoginFragment.
-    */
-   // TODO: Rename and change types and number of parameters
-   public static LoginFragment newInstance(String param1, String param2)
-   {
-      LoginFragment fragment = new LoginFragment();
-      Bundle args = new Bundle();
-      args.putString(ARG_PARAM1, param1);
-      args.putString(ARG_PARAM2, param2);
-      fragment.setArguments(args);
-      return fragment;
-   }
-
    @Override
    public void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
-      if(getArguments() != null)
-      {
-         mParam1 = getArguments().getString(ARG_PARAM1);
-         mParam2 = getArguments().getString(ARG_PARAM2);
-      }
-
-
    }
 
    private String token;
@@ -95,14 +54,11 @@ public class LoginFragment extends Fragment
          if(token.isEmpty())
             tokenEditText.setError("You must enter a token");
          else
+         {
+            SharedPreferencesHelper.getInstance(getContext()).saveToken(token);
             getUserInfo(token);
+         }
       });
-
-//      repositoriesViewModel = ViewModelProviders.of(requireActivity())
-//                                                .get(RepositoriesViewModel.class);
-
-
-
 
       return view;
    }
@@ -119,17 +75,6 @@ public class LoginFragment extends Fragment
       repositoriesViewModel.repositories.observe(requireActivity(), repositories -> {
          if(repositories != null && repositories instanceof List)
          {
-//            LoginFragmentDirections.Act action = LoginFragmentDirections.
-//            ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
-//            action.setDogUuid(uuid);
-//            Navigation.findNavController(v).navigate(action);
-////            dogsList.setVisibility(View.VISIBLE);
-////            dogsListAdapter.updateDogsList(dogs);
-//
-//      NavDirections action = LoginFragmentDirections.actionList();
-//      Navigation.findNavController(fab).navigate(action);
-
-
             User owner = repositories.get(0).getOwner();
             OwnerViewModel ownerViewModel = new ViewModelProvider(requireActivity()).get(OwnerViewModel.class);
             ownerViewModel.setOwnerLiveData(owner);

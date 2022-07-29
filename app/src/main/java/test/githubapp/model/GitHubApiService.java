@@ -28,12 +28,6 @@ public class GitHubApiService
                {
                   Request originalRequest = chain.request();
 
-//                  Request.Builder builder = originalRequest.newBuilder().header("Authorization",
-//                                                                                Credentials.basic(username, password));
-
-//                  Request.Builder builder = originalRequest.newBuilder().header("Authorization",
-//                                                                                "token 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");
-
                   Request.Builder builder = originalRequest.newBuilder().header("Authorization",
                                                                                 "token " + token);
 

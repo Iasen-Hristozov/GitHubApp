@@ -48,11 +48,11 @@ public class UserFragment extends Fragment
       TextView loginTextView = view.findViewById(R.id.loginTextView);
       ImageView avatarImageView = view.findViewById(R.id.avatarImageView);
       TextView followersTextView = view.findViewById(R.id.followersTextView);
+      TextView followingTextView = view.findViewById(R.id.followingTextView);
       RecyclerView repositoriesRecycleView = view.findViewById(R.id.repositoriesRecycleView);
 
       FollowersViewModel followersViewModel = new ViewModelProvider(requireActivity()).get(FollowersViewModel.class);
       FollowingViewModel followingViewModel = new ViewModelProvider(requireActivity()).get(FollowingViewModel.class);
-
 
       followersTextView.setOnClickListener( v -> {
          UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
@@ -61,7 +61,6 @@ public class UserFragment extends Fragment
          });
          Navigation.findNavController(v).navigate(action);
       });
-      TextView followingTextView = view.findViewById(R.id.followingTextView);
       followingTextView.setOnClickListener( v -> {
          UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
          followingViewModel.followingLiveData.observe(requireActivity(), following -> {
@@ -76,21 +75,20 @@ public class UserFragment extends Fragment
       {
          loginTextView.setText(owner.getLogin());
          Utils.loadImage(avatarImageView, owner.getAvatarUrl(), Utils.getProgressDrawable(requireActivity()));
-//         avatarImageView.setImageURI(Uri.parse(owner.getAvatarUrl()));
       });
 
       followersViewModel.followersLiveData.observe(requireActivity(), followers -> {
-         followersTextView.setText("Followers: " + followers.size());
+         followersTextView.setText(String.valueOf(followers.size()));
       });
 
       followingViewModel.followingLiveData.observe(requireActivity(), following -> {
-         followingTextView.setText("Following: " + following.size());
+         followingTextView.setText(String.valueOf(following.size()));
       });
 
       RepositoriesViewModel repositoriesViewModel = new ViewModelProvider(requireActivity()).get(RepositoriesViewModel.class);
       repositoriesViewModel.repositories.observe(requireActivity(), repositories -> {
          RepositoryViewModel repositoryViewModel = new ViewModelProvider(requireActivity()).get(RepositoryViewModel.class);
-         RepositoriesListAdapter repositoriesListAdapter = new RepositoriesListAdapter(getActivity(), repositories, repositoryViewModel);
+         RepositoriesListAdapter repositoriesListAdapter = new RepositoriesListAdapter(repositories, repositoryViewModel);
 
          LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
          DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(repositoriesRecycleView.getContext(),

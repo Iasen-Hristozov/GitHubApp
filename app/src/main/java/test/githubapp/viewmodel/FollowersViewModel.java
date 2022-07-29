@@ -13,17 +13,23 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import test.githubapp.model.GitHubApiService;
 import test.githubapp.model.User;
+import test.githubapp.util.SharedPreferencesHelper;
 
 public class FollowersViewModel extends AndroidViewModel
 {
    public MutableLiveData<List<User>> followersLiveData = new MutableLiveData<>();
-   private final GitHubApiService gitHubApiService = new GitHubApiService("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");
-   private final CompositeDisposable disposable = new CompositeDisposable();
-
+   private final GitHubApiService gitHubApiService;
+   private final CompositeDisposable disposable;
 
    public FollowersViewModel(@NonNull Application application)
    {
       super(application);
+
+      SharedPreferencesHelper preferencesHelper = SharedPreferencesHelper.getInstance(application);
+
+      gitHubApiService = new GitHubApiService(preferencesHelper.getToken());
+
+      disposable = new CompositeDisposable();
    }
 
    public void fetchFromRemote(String owner)

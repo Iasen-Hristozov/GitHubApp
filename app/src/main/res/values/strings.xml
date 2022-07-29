@@ -13,4 +13,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="profile">Profile</string>
     <string name="sample_user">user name</string>
+    <string name="label_following">Following</string>
+    <string name="label_followers">Followers</string>
+    <string name="sample_followers_number">10</string>
+    <string name="sample_following_number">243</string>
 </resources>
