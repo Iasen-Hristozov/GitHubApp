@@ -6,9 +6,11 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.Relation;
 
 @Entity(tableName = "repositories")
 public class Repository
@@ -48,12 +50,17 @@ public class Repository
    private Boolean _private;
 
    @Ignore
-   //   @ColumnInfo(name = "owner")
+//      @ColumnInfo(name = "owner")
+//   @Embedded
    @SerializedName("owner")
    @Expose
    private User owner;
 
-   @Ignore
+//   @Relation(
+//         parentColumn = "id",
+//         entityColumn = "owner_id"
+//   )
+
    @ColumnInfo(name = "owner_id")
    private int ownerId;
 

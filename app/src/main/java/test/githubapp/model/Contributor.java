@@ -3,7 +3,7 @@ package test.githubapp.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-class Contributor extends User
+public class Contributor extends User
 {
    @Expose
    private Boolean siteAdmin;

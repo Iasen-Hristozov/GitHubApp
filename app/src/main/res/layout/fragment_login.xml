@@ -9,17 +9,18 @@
     <EditText
         android:id="@+id/tokenEditText"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.75"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/token"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
-        app:layout_constraintVertical_bias="0.33"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintVertical_bias="0.33"
+        app:layout_constraintWidth_percent="0.75"
+        android:text="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" />
 
     <Button
         android:id="@+id/loginButton"

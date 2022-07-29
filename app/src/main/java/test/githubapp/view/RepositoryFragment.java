@@ -4,68 +4,57 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProvider;
 import test.githubapp.R;
 
 import androidx.fragment.app.Fragment;
+import test.githubapp.viewmodel.RepositoryViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RepositoryFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class RepositoryFragment extends Fragment
 {
-
-   // TODO: Rename parameter arguments, choose names that match
-   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-   private static final String ARG_PARAM1 = "param1";
-   private static final String ARG_PARAM2 = "param2";
-
-   // TODO: Rename and change types of parameters
-   private String mParam1;
-   private String mParam2;
-
+   private boolean isStarred = false;
    public RepositoryFragment()
    {
       // Required empty public constructor
-   }
-
-   /**
-    * Use this factory method to create a new instance of
-    * this fragment using the provided parameters.
-    *
-    * @param param1 Parameter 1.
-    * @param param2 Parameter 2.
-    * @return A new instance of fragment RepositoryFragment.
-    */
-   // TODO: Rename and change types and number of parameters
-   public static RepositoryFragment newInstance(String param1, String param2)
-   {
-      RepositoryFragment fragment = new RepositoryFragment();
-      Bundle args = new Bundle();
-      args.putString(ARG_PARAM1, param1);
-      args.putString(ARG_PARAM2, param2);
-      fragment.setArguments(args);
-      return fragment;
    }
 
    @Override
    public void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
-      if(getArguments() != null)
-      {
-         mParam1 = getArguments().getString(ARG_PARAM1);
-         mParam2 = getArguments().getString(ARG_PARAM2);
-      }
    }
 
    @Override
-   public View onCreateView(LayoutInflater inflater, ViewGroup container,
+   public View onCreateView(LayoutInflater inflater,
+                            ViewGroup container,
                             Bundle savedInstanceState)
    {
       // Inflate the layout for this fragment
-      return inflater.inflate(R.layout.fragment_repository, container, false);
+      View view = inflater.inflate(R.layout.fragment_repository, container, false);
+      TextView repositoryTextView = view.findViewById(R.id.repositoryTextView);
+      TextView contributorsTextView = view.findViewById(R.id.contributorsTextView);
+      TextView ownerTextView = view.findViewById(R.id.ownerTextView);
+      ImageView starredImage = view.findViewById(R.id.staredImageView);
+      starredImage.setOnClickListener(v -> {
+         isStarred = !isStarred;
+         ((ImageView)v).setImageResource(isStarred
+                                         ? android.R.drawable.btn_star_big_off
+                                         : android.R.drawable.btn_star_big_on);
+      });
+
+      RepositoryViewModel repositoryViewModel = new ViewModelProvider(requireActivity()).get(RepositoryViewModel.class);
+      repositoryViewModel.repositoryLiveData.observe(requireActivity(), repository -> {
+         repositoryTextView.setText(repository.getName());
+         ownerTextView.setText(repository.getOwner().getLogin());
+      });
+      repositoryViewModel.contributorsLiveData.observe(requireActivity(), contributors -> {
+         contributorsTextView.setText("Contributors: " + contributors.size());
+      });
+
+      return view;
    }
 }

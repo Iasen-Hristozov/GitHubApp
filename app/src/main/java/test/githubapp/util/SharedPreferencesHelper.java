@@ -22,7 +22,7 @@ public class SharedPreferencesHelper
       return instance;
    }
 
-   public void saveUpadteTime(long time)
+   public void saveUpdateTime(long time)
    {
       sharedPreferences.edit().putLong(PREF_TIME, time).apply();
    }

@@ -14,11 +14,11 @@ public interface GitHubApi
 
 
    @GET("repos/{owner}/{repository}/contributors")
-   Single<List<Contributor>> getContributors(@Path("owner") String owner, @Path("repository") String repository);
+   Single<List<User>> getContributors(@Path("owner") String owner, @Path("repository") String repository);
 
    @GET("users/{owner}/followers")
-   Single<List<Contributor>> getFollowers(@Path("owner") String owner);
+   Single<List<User>> getFollowers(@Path("owner") String owner);
 
    @GET("users/{owner}/following")
-   Single<List<Contributor>> getFollowing(@Path("owner") String owner);
+   Single<List<User>> getFollowing(@Path("owner") String owner);
 }

@@ -21,6 +21,9 @@ public class User
    @Expose
    private Integer id;
 
+   @ColumnInfo(name = "parent_id")
+   public Integer parentId;
+
    @ColumnInfo(name = "node_id")
    @SerializedName("node_id")
    @Expose

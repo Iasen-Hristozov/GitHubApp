@@ -25,11 +25,11 @@ import test.githubapp.util.SharedPreferencesHelper;
 
 public class RepositoriesViewModel extends AndroidViewModel
 {
-   public MutableLiveData<List<Repository>> repositories = new MutableLiveData<>();
-   public MutableLiveData<Boolean>          dogLoadError = new MutableLiveData<>();
-   public MutableLiveData<Boolean>          loading      = new MutableLiveData<>();
+   public MutableLiveData<List<Repository>> repositories          = new MutableLiveData<>();
+   public MutableLiveData<Boolean>          repositoriesLoadError = new MutableLiveData<>();
+   public MutableLiveData<Boolean>          loading               = new MutableLiveData<>();
 
-   private final GitHubApiService    gitHubApiService = new GitHubApiService("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");
+   private final GitHubApiService    gitHubApiService = new GitHubApiService("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");
    private final CompositeDisposable disposable       = new CompositeDisposable();
 
    private AsyncTask<List<Repository>, Void, List<Repository>> insertTask;
@@ -37,6 +37,14 @@ public class RepositoriesViewModel extends AndroidViewModel
 
    private final SharedPreferencesHelper prefHelper  = SharedPreferencesHelper.getInstance(getApplication());
    private       long                    refreshTime = 5 * 60 * 1000 * 1000 * 1000L;
+
+   RepositoryDao repositoriesDao = GitHubDatabase.getInstance(getApplication())
+                                                 .repositoriesDao();
+
+   UsersDao usersDao = GitHubDatabase.getInstance(getApplication())
+                                     .usersDao();
+   PermissionsDao permissionsDao = GitHubDatabase.getInstance(getApplication())
+                                                 .permissionsDao();
 
    public RepositoriesViewModel(@NonNull Application application)
    {
@@ -108,7 +116,7 @@ public class RepositoriesViewModel extends AndroidViewModel
                           @Override
                           public void onError(@io.reactivex.annotations.NonNull Throwable e)
                           {
-                             dogLoadError.setValue(true);
+                             repositoriesLoadError.setValue(true);
                              loading.setValue(false);
                              e.printStackTrace();
                           }
@@ -118,7 +126,7 @@ public class RepositoriesViewModel extends AndroidViewModel
    private void repositoriesRetrieved(List<Repository> repositoriesList)
    {
       repositories.setValue(repositoriesList);
-      dogLoadError.setValue(false);
+      repositoriesLoadError.setValue(false);
       loading.setValue(false);
    }
 
@@ -146,19 +154,20 @@ public class RepositoriesViewModel extends AndroidViewModel
 
       @SafeVarargs
       @Override
-      protected final List<Repository> doInBackground(List<Repository>... lists)
+      protected final List<Repository> doInBackground(List<Repository>... repositories)
       {
-         List<Repository> list = lists[0];
-         RepositoryDao dao = GitHubDatabase.getInstance(getApplication())
-                                           .repositoryDao();
-         dao.deleteAllRepositories();
+         List<Repository> list = repositories[0];
+//         RepositoryDao dao = GitHubDatabase.getInstance(getApplication())
+//                                           .repositoryDao();
+         repositoriesDao.deleteAllRepositories();
+
          ArrayList<Repository> newList = new ArrayList<>(list);
 
-         UsersDao usersDao = GitHubDatabase.getInstance(getApplication())
-                                           .ownerDao();
-
-         PermissionsDao permissionsDao = GitHubDatabase.getInstance(getApplication())
-                                                       .permissionsDao();
+//         UsersDao usersDao = GitHubDatabase.getInstance(getApplication())
+//                                           .ownerDao();
+//
+//         PermissionsDao permissionsDao = GitHubDatabase.getInstance(getApplication())
+//                                                       .permissionsDao();
 
 
          for(Repository repository: newList)
@@ -170,16 +179,17 @@ public class RepositoriesViewModel extends AndroidViewModel
             permissions.setRepositoryId(repository.getId());
             permissionsDao.insert(permissions);
          }
-
-         List<Long> result = dao.insertAll(newList.toArray(new Repository[0]));
-         int i = 0;
-         while(i < list.size())
-         {
-            list.get(i).setId(result.get(i).intValue());
-            ++i;
-         }
-
-         return list;
+//
+//         List<Long> result = dao.insertAll(newList.toArray(new Repository[0]));
+//         int i = 0;
+//         while(i < list.size())
+//         {
+//            list.get(i).setId(result.get(i).intValue());
+//            ++i;
+//         }
+//
+//         return list;
+         return newList;
       }
 
       @Override
@@ -187,7 +197,7 @@ public class RepositoriesViewModel extends AndroidViewModel
       {
          super.onPostExecute(dogBreeds);
          repositoriesRetrieved(dogBreeds);
-         prefHelper.saveUpadteTime(System.nanoTime());
+         prefHelper.saveUpdateTime(System.nanoTime());
       }
    }
 
@@ -197,7 +207,14 @@ public class RepositoriesViewModel extends AndroidViewModel
       @Override
       protected List<Repository> doInBackground(Void... voids)
       {
-         return GitHubDatabase.getInstance(getApplication()).repositoryDao().getAllRepositories();
+//         GitHubDatabase db = GitHubDatabase.getInstance(getApplication());
+//         List<Repository> repositories = db.repositoryDao().getAllRepositories();
+         List<Repository> repositories = repositoriesDao.getAllRepositories();
+
+         for(Repository repository: repositories)
+            repository.setOwner(usersDao.getUser(repository.getOwnerId()));
+
+         return repositories;
       }
 
       @Override

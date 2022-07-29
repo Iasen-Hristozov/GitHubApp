@@ -10,6 +10,8 @@ import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public class GitHubApiService
 {
@@ -30,7 +32,7 @@ public class GitHubApiService
 //                                                                                Credentials.basic(username, password));
 
 //                  Request.Builder builder = originalRequest.newBuilder().header("Authorization",
-//                                                                                "token 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");
+//                                                                                "token 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");
 
                   Request.Builder builder = originalRequest.newBuilder().header("Authorization",
                                                                                 "token " + token);
@@ -55,8 +57,18 @@ public class GitHubApiService
       return api.getRepositories();
    }
 
-//   public Single<List<Cats>> getCats(String url)
-//   {
-//      return api.getCats(url);
-//   }
+   public Single<List<User>> getContributors(String owner, String repository)
+   {
+      return api.getContributors(owner, repository);
+   }
+
+   public Single<List<User>> getFollowers(String owner)
+   {
+      return api.getFollowers(owner);
+   }
+
+   public Single<List<User>> getFollowing(String owner)
+   {
+      return api.getFollowing(owner);
+   }
 }

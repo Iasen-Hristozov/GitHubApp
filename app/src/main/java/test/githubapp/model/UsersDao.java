@@ -14,10 +14,10 @@ public interface UsersDao
    long insert(User user);
 
    @Query("SELECT * FROM users")
-   List<Repository> getAllUsers();
+   List<User> getAllUsers();
 
    @Query("SELECT * FROM users WHERE id = :id")
-   Repository getUser(int id);
+   User getUser(int id);
 
    @Query("DELETE FROM users")
    void deleteAllUsers();

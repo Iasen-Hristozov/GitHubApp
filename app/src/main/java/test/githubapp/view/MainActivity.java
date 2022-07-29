@@ -10,15 +10,13 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity
 {
-   NavController navController;
-
    @Override
    protected void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
-      navController = Navigation.findNavController(this, R.id.fragment);
+      NavController navController = Navigation.findNavController(this, R.id.fragment);
       NavigationUI.setupActionBarWithNavController(this, navController);
    }
 }

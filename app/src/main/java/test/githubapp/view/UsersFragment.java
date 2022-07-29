@@ -2,70 +2,84 @@ package test.githubapp.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import test.githubapp.R;
 
 import androidx.fragment.app.Fragment;
+import test.githubapp.viewmodel.UsersViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UsersFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UsersFragment extends Fragment
 {
-
-   // TODO: Rename parameter arguments, choose names that match
-   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-   private static final String ARG_PARAM1 = "param1";
-   private static final String ARG_PARAM2 = "param2";
-
-   // TODO: Rename and change types of parameters
-   private String mParam1;
-   private String mParam2;
+   UsersListAdapter usersListAdapter;
 
    public UsersFragment()
    {
       // Required empty public constructor
    }
 
-   /**
-    * Use this factory method to create a new instance of
-    * this fragment using the provided parameters.
-    *
-    * @param param1 Parameter 1.
-    * @param param2 Parameter 2.
-    * @return A new instance of fragment UsersFragment.
-    */
-   // TODO: Rename and change types and number of parameters
-   public static UsersFragment newInstance(String param1, String param2)
-   {
-      UsersFragment fragment = new UsersFragment();
-      Bundle args = new Bundle();
-      args.putString(ARG_PARAM1, param1);
-      args.putString(ARG_PARAM2, param2);
-      fragment.setArguments(args);
-      return fragment;
-   }
-
    @Override
    public void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
-      if(getArguments() != null)
-      {
-         mParam1 = getArguments().getString(ARG_PARAM1);
-         mParam2 = getArguments().getString(ARG_PARAM2);
-      }
+      setHasOptionsMenu(true);
    }
 
    @Override
    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                             Bundle savedInstanceState)
    {
-      // Inflate the layout for this fragment
-      return inflater.inflate(R.layout.fragment_users, container, false);
+      View view = inflater.inflate(R.layout.fragment_users, container, false);
+
+      RecyclerView usersRecycleView = view.findViewById(R.id.usersRecyclerView);
+
+      UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
+      usersViewModel.usersLiveData.observe(requireActivity(), users -> {
+         usersListAdapter = new UsersListAdapter(getActivity(), users);
+         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+         usersRecycleView.setLayoutManager(layoutManager);
+         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(usersRecycleView.getContext(),
+                                                                                 layoutManager.getOrientation());
+         usersRecycleView.addItemDecoration(dividerItemDecoration);
+         usersRecycleView.setAdapter(usersListAdapter);
+      });
+
+      return view;
+   }
+
+   @Override
+   public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+      // TODO Add your menu entries here
+      inflater.inflate(R.menu.menu_users, menu);
+      final MenuItem searchItem = menu.findItem(R.id.action_search).setVisible(true);
+      super.onCreateOptionsMenu(menu, inflater);
+
+      final SearchView searchView = (SearchView) searchItem.getActionView();
+
+      searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+      {
+
+         @Override
+         public boolean onQueryTextSubmit(String arg0)
+         {
+            return false;
+         }
+
+         @Override
+         public boolean onQueryTextChange(String arg0)
+         {
+            usersListAdapter.filter(arg0);
+            return true;
+         }
+      });
    }
 }
