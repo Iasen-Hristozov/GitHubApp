@@ -22,10 +22,22 @@ import test.githubapp.viewmodel.FollowingViewModel;
 import test.githubapp.viewmodel.OwnerViewModel;
 import test.githubapp.viewmodel.RepositoriesViewModel;
 import test.githubapp.viewmodel.RepositoryViewModel;
-import test.githubapp.viewmodel.UsersViewModel;
 
 public class UserFragment extends Fragment
 {
+   private String owner;
+
+   private RepositoriesViewModel repositoriesViewModel;
+   private FollowersViewModel followersViewModel;
+   private FollowingViewModel followingViewModel;
+   private OwnerViewModel ownerViewModel;
+
+   private TextView loginTextView;
+   private ImageView avatarImageView;
+   private TextView followersTextView;
+   private TextView followingTextView;
+   private RecyclerView repositoriesRecycleView;
+
    public UserFragment()
    {
       // Required empty public constructor
@@ -43,34 +55,115 @@ public class UserFragment extends Fragment
    {
       View view = inflater.inflate(R.layout.fragment_user, container, false);
 
+      if(getArguments() != null)
+      {
+         owner = UserFragmentArgs.fromBundle(getArguments())
+                                     .getOwner();
+      }
+
       NavDirections action = UserFragmentDirections.actionUserToUsers();
 
-      TextView loginTextView = view.findViewById(R.id.loginTextView);
-      ImageView avatarImageView = view.findViewById(R.id.avatarImageView);
-      TextView followersTextView = view.findViewById(R.id.followersTextView);
-      TextView followingTextView = view.findViewById(R.id.followingTextView);
-      RecyclerView repositoriesRecycleView = view.findViewById(R.id.repositoriesRecycleView);
+      loginTextView = view.findViewById(R.id.loginTextView);
+      avatarImageView = view.findViewById(R.id.avatarImageView);
+      followersTextView = view.findViewById(R.id.followersTextView);
+      followingTextView = view.findViewById(R.id.followingTextView);
+      repositoriesRecycleView = view.findViewById(R.id.repositoriesRecycleView);
 
-      FollowersViewModel followersViewModel = new ViewModelProvider(requireActivity()).get(FollowersViewModel.class);
-      FollowingViewModel followingViewModel = new ViewModelProvider(requireActivity()).get(FollowingViewModel.class);
+      repositoriesViewModel = new ViewModelProvider(requireActivity()).get(RepositoriesViewModel.class);
+      repositoriesViewModel.refresh();
+
+      followersViewModel = new ViewModelProvider(requireActivity()).get(FollowersViewModel.class);
+      followingViewModel = new ViewModelProvider(requireActivity()).get(FollowingViewModel.class);
+      ownerViewModel = new ViewModelProvider(requireActivity()).get(OwnerViewModel.class);
 
       followersTextView.setOnClickListener( v -> {
-         UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
-         followersViewModel.followersLiveData.observe(requireActivity(), followers -> {
-            usersViewModel.setUsersLiveData(followers);
-         });
+//         UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
+//         followersViewModel.followersLiveData.observe(requireActivity(), followers -> {
+//            usersViewModel.setUsersLiveData(followers);
+//         });
          Navigation.findNavController(v).navigate(action);
       });
       followingTextView.setOnClickListener( v -> {
-         UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
-         followingViewModel.followingLiveData.observe(requireActivity(), following -> {
-            usersViewModel.setUsersLiveData(following);
-         });
+//         UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
+//         followingViewModel.followingLiveData.observe(requireActivity(), following -> {
+//            usersViewModel.setUsersLiveData(following);
+//         });
 
          Navigation.findNavController(v).navigate(action);
       });
 
-      OwnerViewModel ownerViewModel = new ViewModelProvider(requireActivity()).get(OwnerViewModel.class);
+
+
+//      RepositoriesViewModel repositoriesViewModel = new ViewModelProvider(requireActivity()).get(RepositoriesViewModel.class);
+//      repositoriesViewModel.repositories.observe(requireActivity(), repositories -> {
+//         RepositoryViewModel repositoryViewModel = new ViewModelProvider(requireActivity()).get(RepositoryViewModel.class);
+//         RepositoriesListAdapter repositoriesListAdapter = new RepositoriesListAdapter(repositories, repositoryViewModel);
+//
+//         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+//         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(repositoriesRecycleView.getContext(),
+//                                                                                 layoutManager.getOrientation());
+//         repositoriesRecycleView.addItemDecoration(dividerItemDecoration);
+//         repositoriesRecycleView.setLayoutManager(layoutManager);
+//         repositoriesRecycleView.setAdapter(repositoriesListAdapter);
+//      });
+
+      getUserData();
+
+      observeViewModels();
+
+      return view;
+   }
+
+   private void getUserData()
+   {
+      repositoriesViewModel = new ViewModelProvider(requireActivity()).get(RepositoriesViewModel.class);
+      repositoriesViewModel.refresh();
+   }
+
+   private void observeViewModels()
+   {
+      repositoriesViewModel.repositories.observe(requireActivity(), repositories -> {
+         if(repositories != null)
+         {
+            RepositoryViewModel repositoryViewModel = new ViewModelProvider(requireActivity()).get(RepositoryViewModel.class);
+            RepositoriesListAdapter repositoriesListAdapter = new RepositoriesListAdapter(repositories, repositoryViewModel);
+
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(repositoriesRecycleView.getContext(),
+                                                                                    layoutManager.getOrientation());
+            repositoriesRecycleView.addItemDecoration(dividerItemDecoration);
+            repositoriesRecycleView.setLayoutManager(layoutManager);
+            repositoriesRecycleView.setAdapter(repositoriesListAdapter);
+
+
+
+//            FollowersViewModel followersViewModel = new ViewModelProvider(requireActivity()).get(FollowersViewModel.class);
+            followersViewModel.fetchFromRemote(owner);
+
+//            FollowingViewModel followingViewModel = new ViewModelProvider(requireActivity()).get(FollowingViewModel.class);
+            followingViewModel.fetchFromRemote(owner);
+         }
+      });
+
+      repositoriesViewModel.repositoriesLoadError.observe(requireActivity(), isError -> {
+         if(isError != null)
+         {
+//            loginError.setVisibility(isError ? View.VISIBLE : View.GONE);
+         }
+      });
+
+      repositoriesViewModel.loading.observe(requireActivity(), isLoading -> {
+         if(isLoading != null)
+         {
+//            loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+//            if(isLoading)
+//            {
+//               loginButton.setVisibility(View.GONE);
+//               tokenEditText.setVisibility(View.GONE);
+//            }
+         }
+      });
+
       ownerViewModel.ownerLiveData.observe(requireActivity(), owner ->
       {
          loginTextView.setText(owner.getLogin());
@@ -85,19 +178,6 @@ public class UserFragment extends Fragment
          followingTextView.setText(String.valueOf(following.size()));
       });
 
-      RepositoriesViewModel repositoriesViewModel = new ViewModelProvider(requireActivity()).get(RepositoriesViewModel.class);
-      repositoriesViewModel.repositories.observe(requireActivity(), repositories -> {
-         RepositoryViewModel repositoryViewModel = new ViewModelProvider(requireActivity()).get(RepositoryViewModel.class);
-         RepositoriesListAdapter repositoriesListAdapter = new RepositoriesListAdapter(repositories, repositoryViewModel);
-
-         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(repositoriesRecycleView.getContext(),
-                                                                                 layoutManager.getOrientation());
-         repositoriesRecycleView.addItemDecoration(dividerItemDecoration);
-         repositoriesRecycleView.setLayoutManager(layoutManager);
-         repositoriesRecycleView.setAdapter(repositoriesListAdapter);
-      });
-
-      return view;
    }
+
 }

@@ -17,34 +17,31 @@ public class GitHubApiService
 {
    private static final String BASE_URL = "https://api.github.com";
 
-   private GitHubApi api;
+   private final GitHubApi api;
 
    public GitHubApiService(String token)
    {
       OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .addInterceptor(new Interceptor() {
-               @Override
-               public okhttp3.Response intercept(Chain chain) throws IOException
-               {
-                  Request originalRequest = chain.request();
+            .addInterceptor(chain -> {
+               Request originalRequest = chain.request();
 
-                  Request.Builder builder = originalRequest.newBuilder().header("Authorization",
-                                                                                "token " + token);
+               Request.Builder builder = originalRequest.newBuilder().header("Authorization",
+                                                                             "token " + token);
 
-
-                  Request newRequest = builder.build();
-                  return chain.proceed(newRequest);
-               }
+               Request newRequest = builder.build();
+               return chain.proceed(newRequest);
             }).build();
 
       api = new Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(GitHubApi.class);
+                        .baseUrl(BASE_URL)
+                        .client(okHttpClient)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                        .build()
+                        .create(GitHubApi.class);
    }
+
+   public Single<User> getUser()  { return  api.getUser(); }
 
    public Single<List<Repository>> getRepositories()
    {

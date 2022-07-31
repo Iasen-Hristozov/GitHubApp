@@ -9,7 +9,7 @@
         android:id="@+id/action_to_login"
         app:popUpTo="@id/fragment_login"/>
 
-    <fragment
+    0<fragment
         android:id="@+id/fragment_login"
         android:name="test.githubapp.view.LoginFragment"
         android:label="@string/app_name"
@@ -32,6 +32,10 @@
             android:id="@+id/action_user_to_repository"
             app:destination="@id/fragment_repository"/>
 
+        <argument
+            android:name="owner"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <fragment

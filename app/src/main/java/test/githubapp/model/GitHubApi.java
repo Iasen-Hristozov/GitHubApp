@@ -8,10 +8,12 @@ import retrofit2.http.Path;
 
 public interface GitHubApi
 {
-//   @GET("user/repos?per_page=100")
+   @GET("user")
+   Single<User> getUser();
+
+   //   @GET("user/repos?per_page=100")
    @GET("user/repos")
    Single<List<Repository>> getRepositories();
-
 
    @GET("repos/{owner}/{repository}/contributors")
    Single<List<User>> getContributors(@Path("owner") String owner, @Path("repository") String repository);
