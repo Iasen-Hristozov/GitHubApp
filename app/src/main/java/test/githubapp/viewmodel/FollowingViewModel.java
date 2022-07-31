@@ -18,6 +18,9 @@ import test.githubapp.util.SharedPreferencesHelper;
 public class FollowingViewModel extends AndroidViewModel
 {
    public MutableLiveData<List<User>> followingLiveData = new MutableLiveData<>();
+   public MutableLiveData<Boolean> followingLoadError = new MutableLiveData<>();
+   public MutableLiveData<Boolean> loading = new MutableLiveData<>();
+
    private final GitHubApiService gitHubApiService;
    private final CompositeDisposable disposable;
 
@@ -34,6 +37,7 @@ public class FollowingViewModel extends AndroidViewModel
 
    public void fetchFromRemote(String owner)
    {
+      loading.setValue(true);
       disposable.add(
             gitHubApiService.getFollowing(owner)
                             .subscribeOn(Schedulers.newThread())
@@ -55,8 +59,8 @@ public class FollowingViewModel extends AndroidViewModel
                                @Override
                                public void onError(@io.reactivex.annotations.NonNull Throwable e)
                                {
-//                                  repositoriesLoadError.setValue(true);
-//                                  loading.setValue(false);
+                                  followingLoadError.setValue(true);
+                                  loading.setValue(false);
                                   e.printStackTrace();
                                }
                             }));
@@ -65,7 +69,7 @@ public class FollowingViewModel extends AndroidViewModel
    private void followingRetrieved(List<User> following)
    {
       followingLiveData.setValue(following);
-//      repositoriesLoadError.setValue(false);
-//      loading.setValue(false);
+      followingLoadError.setValue(false);
+      loading.setValue(false);
    }
 }

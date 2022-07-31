@@ -16,34 +16,32 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import test.githubapp.model.GitHubApiService;
 import test.githubapp.model.GitHubDatabase;
-import test.githubapp.model.Permissions;
-import test.githubapp.model.PermissionsDao;
 import test.githubapp.model.Repository;
 import test.githubapp.model.RepositoryDao;
+import test.githubapp.model.User;
 import test.githubapp.model.UsersDao;
 import test.githubapp.util.SharedPreferencesHelper;
 
-public class RepositoriesViewModel extends AndroidViewModel
+class UserDataViewModel extends AndroidViewModel
 {
+   public MutableLiveData<List<User>> followersLiveData = new MutableLiveData<>();
+   public MutableLiveData<List<User>> followingLiveData = new MutableLiveData<>();
    public MutableLiveData<List<Repository>> repositories = new MutableLiveData<>();
-   public MutableLiveData<Boolean> repositoriesLoadError = new MutableLiveData<>();
+   public MutableLiveData<Boolean> loadError = new MutableLiveData<>();
    public MutableLiveData<Boolean> loading = new MutableLiveData<>();
+
+   private AsyncTask<List<Repository>, Void, List<Repository>> insertRepositoriesTask;
+   private AsyncTask<Void, Void, List<Repository>> retrieveRepositoriesTask;
 
    private final GitHubApiService gitHubApiService;
    private final CompositeDisposable disposable;
 
-   private AsyncTask<List<Repository>, Void, List<Repository>> insertTask;
-   private AsyncTask<Void, Void, List<Repository>> retrieveTask;
+   private final RepositoryDao repositoriesDao;
+   private final UsersDao usersDao;
 
    private final SharedPreferencesHelper preferencesHelper;
 
-   private long refreshTime = 5 * 60 * 1000 * 1000 * 1000L;
-
-   private final RepositoryDao repositoriesDao;
-   private final UsersDao usersDao;
-   private final PermissionsDao permissionsDao;
-
-   public RepositoriesViewModel(@NonNull Application application)
+   public UserDataViewModel(@NonNull Application application)
    {
       super(application);
 
@@ -51,63 +49,91 @@ public class RepositoriesViewModel extends AndroidViewModel
 
       gitHubApiService = new GitHubApiService(preferencesHelper.getToken());
 
+      disposable = new CompositeDisposable();
+
       repositoriesDao = GitHubDatabase.getInstance(application)
-                    .repositoriesDao();
+                                      .repositoriesDao();
       usersDao = GitHubDatabase.getInstance(application)
                                .usersDao();
 
-      permissionsDao = GitHubDatabase.getInstance(application)
-                                     .permissionsDao();
-
-      disposable = new CompositeDisposable();
    }
 
-   public void refresh()
+   public void fetchFollowersFromRemote(String owner)
    {
-      fetchFromRemote();
+      disposable.add(
+            gitHubApiService.getFollowers(owner)
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeWith(new DisposableSingleObserver<List<User>>()
+                            {
+                               @Override
+                               public void onSuccess(@io.reactivex.annotations.NonNull List<User> followers)
+                               {
+                                  followersRetrieved(followers);
+//                                  insertTask = new RepositoriesViewModel.InsertRepositoriesTask();
+//                                  insertTask.execute(repositories);
+//                                  Toast.makeText(getApplication(),
+//                                                 "Repositories retrieved from endpoint",
+//                                                 Toast.LENGTH_SHORT)
+//                                       .show();
+                               }
 
-//      checkCacheDuration();
-//      long updateTime = preferencesHelper.getUpdateTime();
-//      long currentTime = System.nanoTime();
-//      if(updateTime != 0 && currentTime - updateTime < refreshTime)
-//         fetchFromDatabase();
-//      else
-//         fetchFromRemote();
+                               @Override
+                               public void onError(@io.reactivex.annotations.NonNull Throwable e)
+                               {
+                                  loadError.setValue(true);
+                                  loading.setValue(false);
+                                  e.printStackTrace();
+                               }
+                            }));
    }
 
-   public void refreshBypassCache()
+   private void followersRetrieved(List<User> followers)
    {
-      fetchFromRemote();
+      followersLiveData.setValue(followers);
+      loadError.setValue(false);
+      loading.setValue(false);
    }
 
-   private void checkCacheDuration()
+   public void fetchFollowingFromRemote(String owner)
    {
-      String cachePreference = preferencesHelper.getCachedDuration();
+      disposable.add(
+            gitHubApiService.getFollowing(owner)
+                            .subscribeOn(Schedulers.newThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeWith(new DisposableSingleObserver<List<User>>()
+                            {
+                               @Override
+                               public void onSuccess(@io.reactivex.annotations.NonNull List<User> following)
+                               {
+                                  followingRetrieved(following);
+//                                  insertTask = new RepositoriesViewModel.InsertRepositoriesTask();
+//                                  insertTask.execute(repositories);
+//                                  Toast.makeText(getApplication(),
+//                                                 "Repositories retrieved from endpoint",
+//                                                 Toast.LENGTH_SHORT)
+//                                       .show();
+                               }
 
-      if(!cachePreference.equals(""))
-      {
-         try
-         {
-            int cachePreferenceInt = Integer.parseInt(cachePreference);
-            refreshTime = cachePreferenceInt * 1000 * 1000 * 1000L;
-         }
-         catch(NumberFormatException e)
-         {
-            e.printStackTrace();
-         }
-      }
+                               @Override
+                               public void onError(@io.reactivex.annotations.NonNull Throwable e)
+                               {
+                                  loadError.setValue(true);
+                                  loading.setValue(false);
+                                  e.printStackTrace();
+                               }
+                            }));
    }
 
-   private void fetchFromDatabase()
+   private void followingRetrieved(List<User> following)
    {
-      loading.setValue(true);
-      retrieveTask = new RetrieveRepositoriesTask();
-      retrieveTask.execute();
+      followingLiveData.setValue(following);
+      loadError.setValue(false);
+      loading.setValue(false);
    }
 
-   private void fetchFromRemote()
+   private void fetchRepositoriesFromRemote()
    {
-      loading.setValue(true);
       disposable.add(
             gitHubApiService.getRepositories()
                             .subscribeOn(Schedulers.newThread())
@@ -118,8 +144,8 @@ public class RepositoriesViewModel extends AndroidViewModel
                                public void onSuccess(@io.reactivex.annotations.NonNull List<Repository> repositories)
                                {
 
-                                  insertTask = new InsertRepositoriesTask();
-                                  insertTask.execute(repositories);
+                                  insertRepositoriesTask = new InsertRepositoriesTask();
+                                  insertRepositoriesTask.execute(repositories);
                                   Toast.makeText(getApplication(),
                                                  "Repositories retrieved from endpoint",
                                                  Toast.LENGTH_SHORT)
@@ -129,7 +155,7 @@ public class RepositoriesViewModel extends AndroidViewModel
                                @Override
                                public void onError(@io.reactivex.annotations.NonNull Throwable e)
                                {
-                                  repositoriesLoadError.setValue(true);
+                                  loadError.setValue(true);
                                   loading.setValue(false);
                                   e.printStackTrace();
                                }
@@ -139,27 +165,8 @@ public class RepositoriesViewModel extends AndroidViewModel
    private void repositoriesRetrieved(List<Repository> repositoriesList)
    {
       repositories.setValue(repositoriesList);
-      repositoriesLoadError.setValue(false);
+      loadError.setValue(false);
       loading.setValue(false);
-   }
-
-   @Override
-   protected void onCleared()
-   {
-      super.onCleared();
-      disposable.clear();
-
-      if(insertTask != null)
-      {
-         insertTask.cancel(true);
-         insertTask = null;
-      }
-
-      if(retrieveTask != null)
-      {
-         retrieveTask.cancel(true);
-         retrieveTask = null;
-      }
    }
 
    private class InsertRepositoriesTask extends AsyncTask<List<Repository>, Void, List<Repository>>
@@ -170,38 +177,17 @@ public class RepositoriesViewModel extends AndroidViewModel
       protected final List<Repository> doInBackground(List<Repository>... repositories)
       {
          List<Repository> list = repositories[0];
-//         RepositoryDao dao = GitHubDatabase.getInstance(getApplication())
-//                                           .repositoryDao();
+
          repositoriesDao.deleteAllRepositories();
 
          ArrayList<Repository> newList = new ArrayList<>(list);
-
-//         UsersDao usersDao = GitHubDatabase.getInstance(getApplication())
-//                                           .ownerDao();
-//
-//         PermissionsDao permissionsDao = GitHubDatabase.getInstance(getApplication())
-//                                                       .permissionsDao();
-
 
          for(Repository repository : newList)
          {
             long ownerId = usersDao.insert(repository.getOwner());
             repository.setOwnerId((int) ownerId);
 
-            Permissions permissions = repository.getPermissions();
-            permissions.setRepositoryId(repository.getId());
-            permissionsDao.insert(permissions);
          }
-//
-//         List<Long> result = dao.insertAll(newList.toArray(new Repository[0]));
-//         int i = 0;
-//         while(i < list.size())
-//         {
-//            list.get(i).setId(result.get(i).intValue());
-//            ++i;
-//         }
-//
-//         return list;
          return newList;
       }
 
@@ -220,8 +206,6 @@ public class RepositoriesViewModel extends AndroidViewModel
       @Override
       protected List<Repository> doInBackground(Void... voids)
       {
-//         GitHubDatabase db = GitHubDatabase.getInstance(getApplication());
-//         List<Repository> repositories = db.repositoryDao().getAllRepositories();
          List<Repository> repositories = repositoriesDao.getAllRepositories();
 
          for(Repository repository : repositories)
@@ -242,4 +226,5 @@ public class RepositoriesViewModel extends AndroidViewModel
               .show();
       }
    }
+
 }

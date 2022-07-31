@@ -18,6 +18,9 @@ import test.githubapp.util.SharedPreferencesHelper;
 public class ContributorsViewModel extends AndroidViewModel
 {
    public MutableLiveData<List<User>> contributorsLiveData = new MutableLiveData<>();
+   public MutableLiveData<Boolean> contributorsLoadError = new MutableLiveData<>();
+   public MutableLiveData<Boolean> loading = new MutableLiveData<>();
+
    private final GitHubApiService gitHubApiService;
    private final CompositeDisposable disposable;
 
@@ -34,6 +37,7 @@ public class ContributorsViewModel extends AndroidViewModel
 
    public void fetchFromRemote(String owner, String repository)
    {
+      loading.setValue(true);
       disposable.add(
             gitHubApiService.getContributors(owner, repository)
                             .subscribeOn(Schedulers.newThread())
@@ -55,9 +59,9 @@ public class ContributorsViewModel extends AndroidViewModel
                                @Override
                                public void onError(@io.reactivex.annotations.NonNull Throwable e)
                                {
-//                                  repositoriesLoadError.setValue(true);
-//                                  loading.setValue(false);
-//                                  e.printStackTrace();
+                                  contributorsLoadError.setValue(true);
+                                  loading.setValue(false);
+                                  e.printStackTrace();
                                }
                             }));
    }
@@ -65,7 +69,7 @@ public class ContributorsViewModel extends AndroidViewModel
    private void contributorRetrieved(List<User> contributors)
    {
       contributorsLiveData.setValue(contributors);
-//      repositoriesLoadError.setValue(false);
-//      loading.setValue(false);
+      contributorsLoadError.setValue(false);
+      loading.setValue(false);
    }
 }

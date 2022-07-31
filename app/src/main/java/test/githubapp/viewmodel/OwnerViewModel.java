@@ -23,7 +23,6 @@ import test.githubapp.util.SharedPreferencesHelper;
 public class OwnerViewModel extends AndroidViewModel
 {
    public MutableLiveData<User> ownerLiveData = new MutableLiveData<>();
-   public MutableLiveData<List<Repository>> repositories = new MutableLiveData<>();
    public MutableLiveData<Boolean> ownerLoadError = new MutableLiveData<>();
    public MutableLiveData<Boolean> loading = new MutableLiveData<>();
 
@@ -61,7 +60,7 @@ public class OwnerViewModel extends AndroidViewModel
                                public void onSuccess(@io.reactivex.annotations.NonNull User user)
                                {
                                   Toast.makeText(getApplication(),
-                                                 "Repositories retrieved from endpoint",
+                                                 "Owner retrieved from endpoint",
                                                  Toast.LENGTH_SHORT)
                                        .show();
                                   ownerRetrieved(user);

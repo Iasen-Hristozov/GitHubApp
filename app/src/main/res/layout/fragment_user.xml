@@ -1,102 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".view.LoginFragment">
 
-    <ImageView
-        android:id="@+id/avatarImageView"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <TextView
-        android:id="@+id/loginTextView"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="@string/sample_login"
-        app:layout_constraintTop_toBottomOf="@id/avatarImageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/followersTextView"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:text="@string/sample_followers_number"
-        android:textColor="#777"
-        android:textSize="22sp"
-        app:layout_constraintTop_toTopOf="@+id/divider"
-        app:layout_constraintEnd_toStartOf="@+id/divider" />
-
-    <TextView
-        android:id="@+id/followersLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_followers"
-        android:textColor="#777"
-        android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@+id/followersTextView"
-        app:layout_constraintStart_toStartOf="@+id/followersTextView"
-        app:layout_constraintEnd_toEndOf="@+id/followersTextView" />
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:background="#ccc"
-        app:layout_constraintTop_toBottomOf="@+id/loginTextView"
-        app:layout_constraintBottom_toBottomOf="@+id/followingLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <TextView
-        android:id="@+id/followingTextView"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:maxLines="1"
-        android:text="@string/sample_following_number"
-        android:textColor="#777"
-        android:textSize="22sp"
-        app:layout_constraintTop_toTopOf="@+id/divider"
-        app:layout_constraintStart_toEndOf="@id/divider" />
-
-    <TextView
-        android:id="@+id/followingLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:text="@string/label_following"
-        android:textColor="#777"
-        android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@+id/followingTextView"
-        app:layout_constraintStart_toStartOf="@+id/followingTextView"
-        app:layout_constraintEnd_toEndOf="@+id/followingTextView" />
-
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/repositoriesRecycleView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:scrollbars="vertical"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/followingTextView"/>
+        android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/avatarImageView"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/loginTextView"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text=""
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/avatarImageView" />
+
+        <TextView
+            android:id="@+id/followersTextView"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="#777"
+            android:textSize="22sp"
+            app:layout_constraintEnd_toStartOf="@+id/divider"
+            app:layout_constraintTop_toTopOf="@+id/divider" />
+
+        <TextView
+            android:id="@+id/followersLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_followers"
+            android:textColor="#777"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/followersTextView"
+            app:layout_constraintStart_toStartOf="@+id/followersTextView"
+            app:layout_constraintTop_toBottomOf="@+id/followersTextView" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="#ccc"
+            app:layout_constraintBottom_toBottomOf="@+id/followingLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loginTextView" />
+
+        <TextView
+            android:id="@+id/followingTextView"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="#777"
+            android:textSize="22sp"
+            app:layout_constraintStart_toEndOf="@id/divider"
+            app:layout_constraintTop_toTopOf="@+id/divider" />
+
+        <TextView
+            android:id="@+id/followingLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="@string/label_following"
+            android:textColor="#777"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/followingTextView"
+            app:layout_constraintStart_toStartOf="@+id/followingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/followingTextView" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/repositoriesRecycleView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/followingTextView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include layout="@layout/loading_veiw"/>
+
+</FrameLayout>

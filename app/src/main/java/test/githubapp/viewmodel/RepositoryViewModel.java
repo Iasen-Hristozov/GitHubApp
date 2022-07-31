@@ -21,6 +21,9 @@ public class RepositoryViewModel extends AndroidViewModel
    public MutableLiveData<Repository> repositoryLiveData = new MutableLiveData<>();
 
    public MutableLiveData<List<User>> contributorsLiveData = new MutableLiveData<>();
+   public MutableLiveData<Boolean> contributorsLoadError = new MutableLiveData<>();
+   public MutableLiveData<Boolean> loading = new MutableLiveData<>();
+
 
    private final GitHubApiService gitHubApiService;
 
@@ -44,6 +47,7 @@ public class RepositoryViewModel extends AndroidViewModel
 
    public void fetchContributorsFromRemote(String owner, String repository)
    {
+      loading.setValue(true);
       disposable.add(
             gitHubApiService.getContributors(owner, repository)
                             .subscribeOn(Schedulers.newThread())
@@ -65,9 +69,9 @@ public class RepositoryViewModel extends AndroidViewModel
                                @Override
                                public void onError(@io.reactivex.annotations.NonNull Throwable e)
                                {
-//                                  repositoriesLoadError.setValue(true);
-//                                  loading.setValue(false);
-//                                  e.printStackTrace();
+                                  contributorsLoadError.setValue(true);
+                                  loading.setValue(false);
+                                  e.printStackTrace();
                                }
                             }));
    }
@@ -75,8 +79,8 @@ public class RepositoryViewModel extends AndroidViewModel
    private void contributorRetrieved(List<User> contributors)
    {
       contributorsLiveData.setValue(contributors);
-//      repositoriesLoadError.setValue(false);
-//      loading.setValue(false);
+      contributorsLoadError.setValue(false);
+      loading.setValue(false);
    }
 
 }

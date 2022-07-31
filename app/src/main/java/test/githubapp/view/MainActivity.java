@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity
    @Override
    public boolean onSupportNavigateUp()
    {
-      return navController.popBackStack();
+//      return navController.popBackStack();
 //      return navController.navigateBack(navController, (DrawerLayout) null);
+      return NavigationUI.navigateUp(navController, (DrawerLayout) null);
    }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import test.githubapp.viewmodel.FollowingViewModel;
 import test.githubapp.viewmodel.OwnerViewModel;
 import test.githubapp.viewmodel.RepositoriesViewModel;
 import test.githubapp.viewmodel.RepositoryViewModel;
+import test.githubapp.viewmodel.UsersViewModel;
 
 public class UserFragment extends Fragment
 {
@@ -37,10 +39,10 @@ public class UserFragment extends Fragment
    private TextView followersTextView;
    private TextView followingTextView;
    private RecyclerView repositoriesRecycleView;
+   private FrameLayout progressView;
 
    public UserFragment()
    {
-      // Required empty public constructor
    }
 
    @Override
@@ -68,44 +70,22 @@ public class UserFragment extends Fragment
       followersTextView = view.findViewById(R.id.followersTextView);
       followingTextView = view.findViewById(R.id.followingTextView);
       repositoriesRecycleView = view.findViewById(R.id.repositoriesRecycleView);
+      progressView = view.findViewById(R.id.progressView);
 
       repositoriesViewModel = new ViewModelProvider(requireActivity()).get(RepositoriesViewModel.class);
-      repositoriesViewModel.refresh();
-
       followersViewModel = new ViewModelProvider(requireActivity()).get(FollowersViewModel.class);
       followingViewModel = new ViewModelProvider(requireActivity()).get(FollowingViewModel.class);
       ownerViewModel = new ViewModelProvider(requireActivity()).get(OwnerViewModel.class);
+      UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
 
       followersTextView.setOnClickListener( v -> {
-//         UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
-//         followersViewModel.followersLiveData.observe(requireActivity(), followers -> {
-//            usersViewModel.setUsersLiveData(followers);
-//         });
-         Navigation.findNavController(v).navigate(action);
+         followersViewModel.followersLiveData.observe(requireActivity(), usersViewModel::setUsersLiveData);
+            Navigation.findNavController(v).navigate(action);
       });
       followingTextView.setOnClickListener( v -> {
-//         UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
-//         followingViewModel.followingLiveData.observe(requireActivity(), following -> {
-//            usersViewModel.setUsersLiveData(following);
-//         });
-
+         followingViewModel.followingLiveData.observe(requireActivity(), usersViewModel::setUsersLiveData);
          Navigation.findNavController(v).navigate(action);
       });
-
-
-
-//      RepositoriesViewModel repositoriesViewModel = new ViewModelProvider(requireActivity()).get(RepositoriesViewModel.class);
-//      repositoriesViewModel.repositories.observe(requireActivity(), repositories -> {
-//         RepositoryViewModel repositoryViewModel = new ViewModelProvider(requireActivity()).get(RepositoryViewModel.class);
-//         RepositoriesListAdapter repositoriesListAdapter = new RepositoriesListAdapter(repositories, repositoryViewModel);
-//
-//         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-//         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(repositoriesRecycleView.getContext(),
-//                                                                                 layoutManager.getOrientation());
-//         repositoriesRecycleView.addItemDecoration(dividerItemDecoration);
-//         repositoriesRecycleView.setLayoutManager(layoutManager);
-//         repositoriesRecycleView.setAdapter(repositoriesListAdapter);
-//      });
 
       getUserData();
 
@@ -116,8 +96,9 @@ public class UserFragment extends Fragment
 
    private void getUserData()
    {
-      repositoriesViewModel = new ViewModelProvider(requireActivity()).get(RepositoriesViewModel.class);
       repositoriesViewModel.refresh();
+      followersViewModel.fetchFromRemote(owner);
+      followingViewModel.fetchFromRemote(owner);
    }
 
    private void observeViewModels()
@@ -134,14 +115,6 @@ public class UserFragment extends Fragment
             repositoriesRecycleView.addItemDecoration(dividerItemDecoration);
             repositoriesRecycleView.setLayoutManager(layoutManager);
             repositoriesRecycleView.setAdapter(repositoriesListAdapter);
-
-
-
-//            FollowersViewModel followersViewModel = new ViewModelProvider(requireActivity()).get(FollowersViewModel.class);
-            followersViewModel.fetchFromRemote(owner);
-
-//            FollowingViewModel followingViewModel = new ViewModelProvider(requireActivity()).get(FollowingViewModel.class);
-            followingViewModel.fetchFromRemote(owner);
          }
       });
 
@@ -154,14 +127,7 @@ public class UserFragment extends Fragment
 
       repositoriesViewModel.loading.observe(requireActivity(), isLoading -> {
          if(isLoading != null)
-         {
-//            loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-//            if(isLoading)
-//            {
-//               loginButton.setVisibility(View.GONE);
-//               tokenEditText.setVisibility(View.GONE);
-//            }
-         }
+            showProgressView();
       });
 
       ownerViewModel.ownerLiveData.observe(requireActivity(), owner ->
@@ -171,13 +137,31 @@ public class UserFragment extends Fragment
       });
 
       followersViewModel.followersLiveData.observe(requireActivity(), followers -> {
-         followersTextView.setText(String.valueOf(followers.size()));
+         if(followers != null)
+            followersTextView.setText(String.valueOf(followers.size()));
+      });
+
+      followersViewModel.loading.observe(requireActivity(), isLoading -> {
+         if(isLoading != null)
+            showProgressView();
       });
 
       followingViewModel.followingLiveData.observe(requireActivity(), following -> {
-         followingTextView.setText(String.valueOf(following.size()));
+         if(following != null)
+            followingTextView.setText(String.valueOf(following.size()));
       });
 
+      followingViewModel.loading.observe(requireActivity(), isLoading -> {
+         if(isLoading != null)
+            showProgressView();
+      });
+   }
+
+   private void showProgressView()
+   {
+         progressView.setVisibility(Boolean.TRUE.equals(repositoriesViewModel.loading.getValue())
+                                          || Boolean.TRUE.equals(followersViewModel.loading.getValue())
+                                          || Boolean.TRUE.equals(followingViewModel.loading.getValue()) ? View.VISIBLE : View.GONE);
    }
 
 }

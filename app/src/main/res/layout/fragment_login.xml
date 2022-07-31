@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.LoginFragment" >
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -23,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.33"
         app:layout_constraintWidth_percent="0.75"
-        android:text="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" />
+        android:text="" />
 
         <include layout="@layout/loading_veiw"/>
 
@@ -45,7 +46,8 @@
         android:text="An error occured while loading data"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loginButton" />
+        app:layout_constraintTop_toBottomOf="@id/loginButton"
+        android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

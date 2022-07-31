@@ -20,7 +20,6 @@ import test.githubapp.R;
 import test.githubapp.model.User;
 
 public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.UserViewHolder>
-//      implements DogClickListener
 {
    private final Context context;
 

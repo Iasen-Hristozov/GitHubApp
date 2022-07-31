@@ -7,27 +7,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.MenuProvider;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
-import test.githubapp.R;
-
 import androidx.fragment.app.Fragment;
-import test.githubapp.viewmodel.ContributorsViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import test.githubapp.R;
 import test.githubapp.viewmodel.RepositoryViewModel;
 import test.githubapp.viewmodel.UsersViewModel;
 
 public class RepositoryFragment extends Fragment implements MenuProvider
 {
    private boolean isStarred = false;
-   NavController navController;
+
+   private RepositoryViewModel repositoryViewModel;
+
+   private FrameLayout progressView;
+
    public RepositoryFragment()
    {
       // Required empty public constructor
@@ -45,15 +45,18 @@ public class RepositoryFragment extends Fragment implements MenuProvider
                             ViewGroup container,
                             Bundle savedInstanceState)
    {
-      // Inflate the layout for this fragment
       View view = inflater.inflate(R.layout.fragment_repository, container, false);
       TextView repositoryTextView = view.findViewById(R.id.repositoryTextView);
+      UsersViewModel usersViewModel = new ViewModelProvider(requireActivity()).get(UsersViewModel.class);
       TextView contributorsTextView = view.findViewById(R.id.contributorsTextView);
       contributorsTextView.setOnClickListener(v -> {
+         repositoryViewModel.contributorsLiveData.observe(requireActivity(), usersViewModel::setUsersLiveData);
          Navigation.findNavController(v).navigate(R.id.action_repository_to_users);
       });
       TextView ownerTextView = view.findViewById(R.id.ownerTextView);
       ImageView starredImage = view.findViewById(R.id.staredImageView);
+
+      progressView = view.findViewById(R.id.progressView);
       starredImage.setOnClickListener(v -> {
          isStarred = !isStarred;
          ((ImageView)v).setImageResource(isStarred
@@ -61,21 +64,18 @@ public class RepositoryFragment extends Fragment implements MenuProvider
                                          : android.R.drawable.btn_star_big_on);
       });
 
-      RepositoryViewModel repositoryViewModel = new ViewModelProvider(requireActivity()).get(RepositoryViewModel.class);
+      repositoryViewModel = new ViewModelProvider(requireActivity()).get(RepositoryViewModel.class);
       repositoryViewModel.repositoryLiveData.observe(requireActivity(), repository -> {
          repositoryTextView.setText(repository.getName());
          ownerTextView.setText(repository.getOwner().getLogin());
 
-         ContributorsViewModel contributorsViewModel = new ViewModelProvider(requireActivity()).get(ContributorsViewModel.class);
-         contributorsViewModel.fetchFromRemote(repository.getOwner().getLogin(), repository.getName());
-         contributorsViewModel.contributorsLiveData.observe(requireActivity(), contributors -> {
-            contributorsTextView.setText(String.valueOf(contributors.size()));
-            new ViewModelProvider(requireActivity()).get(UsersViewModel.class).setUsersLiveData(contributors);
-         });
-
+         repositoryViewModel.fetchContributorsFromRemote(repository.getOwner().getLogin(), repository.getName());
       });
       repositoryViewModel.contributorsLiveData.observe(requireActivity(), contributors -> {
          contributorsTextView.setText(String.valueOf(contributors.size()));
+      });
+      repositoryViewModel.loading.observe(requireActivity(), isLoading -> {
+         progressView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
       });
 
       return view;
@@ -94,13 +94,11 @@ public class RepositoryFragment extends Fragment implements MenuProvider
       switch(menuItem.getItemId())
       {
          case R.id.fragment_profile:
-            Navigation.findNavController(getView()).navigate(R.id.action_to_profile);
+            Navigation.findNavController(requireView()).navigate(R.id.action_to_profile);
             break;
 
          case R.id.fragment_login:
-            Navigation.findNavController(getView()).navigate(R.id.action_to_login);
-//            NavDirections action = UserFragmentDirections.actionToLogin();
-//            Navigation.findNavController(getView()).navigate(action);
+            Navigation.findNavController(requireView()).navigate(R.id.action_to_login);
             break;
 
 
@@ -112,9 +110,10 @@ public class RepositoryFragment extends Fragment implements MenuProvider
    }
 
    @Override
-   public void onDestroy()
+   public void onPause()
    {
-      super.onDestroy();
+      super.onPause();
       requireActivity().removeMenuProvider(this);
+
    }
 }
